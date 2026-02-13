@@ -18,12 +18,17 @@ func (b *NodeBuilder) EmitContext() *printer.EmitContext {
 }
 
 func (b *NodeBuilder) enterContext(enclosingDeclaration *ast.Node, flags nodebuilder.Flags, internalFlags nodebuilder.InternalFlags, tracker nodebuilder.SymbolTracker) {
+	b.enterContextEx(enclosingDeclaration, flags, internalFlags, tracker, -1, nil)
+}
+
+func (b *NodeBuilder) enterContextEx(enclosingDeclaration *ast.Node, flags nodebuilder.Flags, internalFlags nodebuilder.InternalFlags, tracker nodebuilder.SymbolTracker, verbosityLevel int, out *WriterContextOut) {
 	b.ctxStack = append(b.ctxStack, b.impl.ctx)
 	b.impl.ctx = &NodeBuilderContext{
 		host:                     b.host,
 		tracker:                  tracker,
 		flags:                    flags,
 		internalFlags:            internalFlags,
+		maxExpansionDepth:        verbosityLevel,
 		enclosingDeclaration:     enclosingDeclaration,
 		enclosingFile:            ast.GetSourceFileOfNode(enclosingDeclaration),
 		inferTypeParameters:      make([]*Type, 0),
@@ -166,6 +171,28 @@ func (b *NodeBuilder) TypePredicateToTypePredicateNode(predicate *TypePredicate,
 func (b *NodeBuilder) TypeToTypeNode(typ *Type, enclosingDeclaration *ast.Node, flags nodebuilder.Flags, internalFlags nodebuilder.InternalFlags, tracker nodebuilder.SymbolTracker) *ast.Node {
 	b.enterContext(enclosingDeclaration, flags, internalFlags, tracker)
 	return b.exitContext(b.impl.typeToTypeNode(typ))
+}
+
+// TypeToTypeNodeWithVerbosity is like TypeToTypeNode but with verbosity level support for expandable hover.
+func (b *NodeBuilder) TypeToTypeNodeWithVerbosity(typ *Type, enclosingDeclaration *ast.Node, flags nodebuilder.Flags, internalFlags nodebuilder.InternalFlags, tracker nodebuilder.SymbolTracker, verbosityLevel int, out *WriterContextOut) *ast.Node {
+	b.enterContextEx(enclosingDeclaration, flags, internalFlags, tracker, verbosityLevel, out)
+	result := b.impl.typeToTypeNode(typ)
+	if out != nil {
+		out.CanIncreaseExpansionDepth = b.impl.ctx.out.CanIncreaseExpansionDepth
+		out.Truncated = b.impl.ctx.out.Truncated
+	}
+	return b.exitContext(result)
+}
+
+// SignatureToSignatureDeclarationWithVerbosity is like SignatureToSignatureDeclaration but with verbosity level support.
+func (b *NodeBuilder) SignatureToSignatureDeclarationWithVerbosity(signature *Signature, kind ast.Kind, enclosingDeclaration *ast.Node, flags nodebuilder.Flags, internalFlags nodebuilder.InternalFlags, tracker nodebuilder.SymbolTracker, verbosityLevel int, out *WriterContextOut) *ast.Node {
+	b.enterContextEx(enclosingDeclaration, flags, internalFlags, tracker, verbosityLevel, out)
+	result := b.impl.signatureToSignatureDeclarationHelper(signature, kind, nil)
+	if out != nil {
+		out.CanIncreaseExpansionDepth = b.impl.ctx.out.CanIncreaseExpansionDepth
+		out.Truncated = b.impl.ctx.out.Truncated
+	}
+	return b.exitContext(result)
 }
 
 // var _ NodeBuilderInterface = NewNodeBuilderAPI(nil, nil)
