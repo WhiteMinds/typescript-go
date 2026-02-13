@@ -4,7 +4,7 @@
 //           ^^^^^^^^^^^^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | interface LargeInterface
+// | interface LargeInterface {    prop1: any;    prop2: any;    prop3: any;    prop4: any;    prop5: any;    prop6: any;    prop7: any;    prop8: any;    prop9: any;    prop10: any;    prop11: any;    prop12: any;    prop13: any;    prop14: any;    prop15: any;    prop16: any;    prop17: any;    prop18: any;    prop19: any;    prop20: any;    prop21: any;    prop22: any;    prop23: any;    "... (truncated) ...";    prop298: any;}
 // | ```
 // | 
 // | (verbosity level: 1)
@@ -342,7 +342,8 @@
             "line": 0,
             "character": 24
           }
-        }
+        },
+        "canIncreaseVerbosity": true
       },
       "verbosityLevel": 0
     }
@@ -361,7 +362,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\ninterface LargeInterface\n```\n"
+          "value": "```tsx\ninterface LargeInterface {    prop1: any;    prop2: any;    prop3: any;    prop4: any;    prop5: any;    prop6: any;    prop7: any;    prop8: any;    prop9: any;    prop10: any;    prop11: any;    prop12: any;    prop13: any;    prop14: any;    prop15: any;    prop16: any;    prop17: any;    prop18: any;    prop19: any;    prop20: any;    prop21: any;    prop22: any;    prop23: any;    \"... (truncated) ...\";    prop298: any;}\n```\n"
         },
         "range": {
           "start": {

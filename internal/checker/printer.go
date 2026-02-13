@@ -449,6 +449,35 @@ func (c *Checker) SignatureToStringWithVerbosity(signature *Signature, enclosing
 	return writer.String()
 }
 
+// SymbolToDeclarationsWithVerbosity produces declaration strings for a symbol with verbosity level support for expandable hover.
+func (c *Checker) SymbolToDeclarationsWithVerbosity(symbol *ast.Symbol, meaning ast.SymbolFlags, enclosingDeclaration *ast.Node, flags TypeFormatFlags, verbosityLevel int, out *WriterContextOut) string {
+	writer := printer.NewTextWriter("", 0)
+	combinedFlags := toNodeBuilderFlags(flags) | nodebuilder.FlagsIgnoreErrors
+	noTruncation := (c.compilerOptions.NoErrorTruncation == core.TSTrue) || (flags&TypeFormatFlagsNoTruncation != 0)
+	if noTruncation {
+		combinedFlags = combinedFlags | nodebuilder.FlagsNoTruncation
+	}
+	nodeBuilder := c.getNodeBuilder()
+	nodes := nodeBuilder.SymbolToDeclarationsWithVerbosity(symbol, meaning, enclosingDeclaration, combinedFlags, nodebuilder.InternalFlagsNone, nil, verbosityLevel, out)
+	if len(nodes) == 0 {
+		return ""
+	}
+	p := createPrinterWithRemoveComments(nodeBuilder.EmitContext())
+	var sourceFile *ast.SourceFile
+	if enclosingDeclaration != nil {
+		sourceFile = ast.GetSourceFileOfNode(enclosingDeclaration)
+	} else if symbol.ValueDeclaration != nil {
+		sourceFile = ast.GetSourceFileOfNode(symbol.ValueDeclaration)
+	}
+	for i, node := range nodes {
+		if i > 0 {
+			writer.WriteLine()
+		}
+		p.Write(node, sourceFile, writer, nil)
+	}
+	return writer.String()
+}
+
 func (c *Checker) TypePredicateToTypePredicateNode(t *TypePredicate, enclosingDeclaration *ast.Node, flags nodebuilder.Flags, idToSymbol map[*ast.IdentifierNode]*ast.Symbol) *ast.TypePredicateNodeNode {
 	nodeBuilder := c.getNodeBuilderEx(idToSymbol)
 	return nodeBuilder.TypePredicateToTypePredicateNode(t, enclosingDeclaration, flags, nodebuilder.InternalFlagsNone, nil)

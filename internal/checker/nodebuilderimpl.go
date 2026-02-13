@@ -1691,10 +1691,6 @@ func (b *NodeBuilderImpl) cloneBindingName(node *ast.Node) *ast.Node {
 	return visited
 }
 
-func (b *NodeBuilderImpl) symbolTableToDeclarationStatements(symbolTable *ast.SymbolTable) []*ast.Node {
-	panic("unimplemented") // !!!
-}
-
 func (b *NodeBuilderImpl) serializeTypeForExpression(expr *ast.Node) *ast.Node {
 	// !!! TODO: shim, add node reuse
 	t := b.ch.instantiateType(b.ch.getWidenedType(b.ch.getRegularTypeOfExpression(expr)), b.ctx.mapper)

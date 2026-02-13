@@ -8,8 +8,8 @@
 //           ^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | class Foo<T>
-// | namespace Foo
+// | namespace Foo {    const y: number;    const x: string;    const w: string;}
+// | 
 // | ```
 // | 
 // | (verbosity level: 1)
@@ -34,7 +34,7 @@
 //                          ^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | namespace ns
+// | namespace ns {    export { Foo };    export const c: number;    export const d: number;    export const f: {        a: string;    };    export { unknown as Foo };}
 // | ```
 // | 
 // | (verbosity level: 2)
@@ -42,7 +42,7 @@
 //                          ^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | namespace ns
+// | namespace ns {    export { Foo };    export const c: number;    export const d: number;    export const f: Apple;    export { unknown as Foo };}
 // | ```
 // | 
 // | (verbosity level: 1)
@@ -75,7 +75,7 @@
 //           ^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | namespace Two
+// | namespace Two {    const f: typeof Foo;    const g: typeof Foo;}
 // | ```
 // | 
 // | (verbosity level: 2)
@@ -83,7 +83,7 @@
 //           ^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | namespace Two
+// | namespace Two {    const f: Foo<number>;    const g: Foo<string>;}
 // | ```
 // | 
 // | (verbosity level: 1)
@@ -105,7 +105,7 @@
 //           ^^^^^^^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | namespace OnlyLocal
+// | namespace OnlyLocal { }
 // | ```
 // | 
 // | (verbosity level: 1)
@@ -128,7 +128,7 @@
 //         ^^^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | module "./foo"
+// | namespace "./foo" {    function foo(): string;}
 // | ```
 // | 
 // | (verbosity level: 1)
@@ -170,7 +170,8 @@
             "line": 4,
             "character": 13
           }
-        }
+        },
+        "canIncreaseVerbosity": true
       },
       "verbosityLevel": 0
     }
@@ -189,7 +190,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\nclass Foo<T>\nnamespace Foo\n```\n"
+          "value": "```tsx\nnamespace Foo {    const y: number;    const x: string;    const w: string;}\n\n```\n"
         },
         "range": {
           "start": {
@@ -231,7 +232,8 @@
             "line": 1,
             "character": 27
           }
-        }
+        },
+        "canIncreaseVerbosity": true
       },
       "verbosityLevel": 0
     }
@@ -250,7 +252,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\nnamespace ns\n```\n"
+          "value": "```tsx\nnamespace ns {    export { Foo };    export const c: number;    export const d: number;    export const f: Apple;    export { unknown as Foo };}\n```\n"
         },
         "range": {
           "start": {
@@ -262,6 +264,7 @@
             "character": 27
           }
         },
+        "canIncreaseVerbosity": true,
         "canDecreaseVerbosity": true
       },
       "verbosityLevel": 1
@@ -281,7 +284,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\nnamespace ns\n```\n"
+          "value": "```tsx\nnamespace ns {    export { Foo };    export const c: number;    export const d: number;    export const f: {        a: string;    };    export { unknown as Foo };}\n```\n"
         },
         "range": {
           "start": {
@@ -323,7 +326,8 @@
             "line": 3,
             "character": 13
           }
-        }
+        },
+        "canIncreaseVerbosity": true
       },
       "verbosityLevel": 0
     }
@@ -342,7 +346,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\nnamespace Two\n```\n"
+          "value": "```tsx\nnamespace Two {    const f: Foo<number>;    const g: Foo<string>;}\n```\n"
         },
         "range": {
           "start": {
@@ -354,6 +358,7 @@
             "character": 13
           }
         },
+        "canIncreaseVerbosity": true,
         "canDecreaseVerbosity": true
       },
       "verbosityLevel": 1
@@ -373,7 +378,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\nnamespace Two\n```\n"
+          "value": "```tsx\nnamespace Two {    const f: typeof Foo;    const g: typeof Foo;}\n```\n"
         },
         "range": {
           "start": {
@@ -415,7 +420,8 @@
             "line": 0,
             "character": 19
           }
-        }
+        },
+        "canIncreaseVerbosity": true
       },
       "verbosityLevel": 0
     }
@@ -434,7 +440,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\nnamespace OnlyLocal\n```\n"
+          "value": "```tsx\nnamespace OnlyLocal { }\n```\n"
         },
         "range": {
           "start": {
@@ -476,7 +482,8 @@
             "line": 1,
             "character": 13
           }
-        }
+        },
+        "canIncreaseVerbosity": true
       },
       "verbosityLevel": 0
     }
@@ -495,7 +502,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\nmodule \"./foo\"\n```\n"
+          "value": "```tsx\nnamespace \"./foo\" {    function foo(): string;}\n```\n"
         },
         "range": {
           "start": {

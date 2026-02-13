@@ -99,7 +99,7 @@
 //       ^^^^^^^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | class SomeClass
+// | class SomeClass {    b: {        prop2: number;        prop3: SomeType;    };}
 // | ```
 // | 
 // | (verbosity level: 2)
@@ -107,7 +107,7 @@
 //       ^^^^^^^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | class SomeClass
+// | class SomeClass {    b: SomeType2;}
 // | ```
 // | 
 // | (verbosity level: 1)
@@ -397,7 +397,8 @@
             "line": 23,
             "character": 15
           }
-        }
+        },
+        "canIncreaseVerbosity": true
       },
       "verbosityLevel": 0
     }
@@ -416,7 +417,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\nclass SomeClass\n```\n"
+          "value": "```tsx\nclass SomeClass {    b: SomeType2;}\n```\n"
         },
         "range": {
           "start": {
@@ -428,6 +429,7 @@
             "character": 15
           }
         },
+        "canIncreaseVerbosity": true,
         "canDecreaseVerbosity": true
       },
       "verbosityLevel": 1
@@ -447,7 +449,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\nclass SomeClass\n```\n"
+          "value": "```tsx\nclass SomeClass {    b: {        prop2: number;        prop3: SomeType;    };}\n```\n"
         },
         "range": {
           "start": {
@@ -459,6 +461,7 @@
             "character": 15
           }
         },
+        "canIncreaseVerbosity": true,
         "canDecreaseVerbosity": true
       },
       "verbosityLevel": 2

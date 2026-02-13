@@ -69,7 +69,7 @@
 //           ^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | class Bar
+// | class Bar {    a: string;    bar(): void;    baz(param: string): void;}
 // | ```
 // | 
 // | (verbosity level: 1)
@@ -369,7 +369,8 @@
             "line": 17,
             "character": 13
           }
-        }
+        },
+        "canIncreaseVerbosity": true
       },
       "verbosityLevel": 0
     }
@@ -388,7 +389,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\nclass Bar\n```\n"
+          "value": "```tsx\nclass Bar {    a: string;    bar(): void;    baz(param: string): void;}\n```\n"
         },
         "range": {
           "start": {

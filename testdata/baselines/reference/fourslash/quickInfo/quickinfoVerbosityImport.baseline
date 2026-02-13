@@ -48,7 +48,7 @@
 //          ^^^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | (alias) enum Color
+// | (alias) enum Color {    Red,    Green,    Blue}
 // | ```
 // | 
 // | (verbosity level: 1)
@@ -288,7 +288,8 @@
             "line": 1,
             "character": 14
           }
-        }
+        },
+        "canIncreaseVerbosity": true
       },
       "verbosityLevel": 0
     }
@@ -307,7 +308,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\n(alias) enum Color\n```\n"
+          "value": "```tsx\n(alias) enum Color {    Red,    Green,    Blue}\n```\n"
         },
         "range": {
           "start": {
@@ -349,7 +350,8 @@
             "line": 0,
             "character": 10
           }
-        }
+        },
+        "canIncreaseVerbosity": true
       },
       "verbosityLevel": 0
     }

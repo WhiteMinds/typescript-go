@@ -12,7 +12,7 @@
 //           ^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | interface Foo<T extends Date>
+// | interface Foo<T extends Date> {    prop: T;}
 // | ```
 // | 
 // | (verbosity level: 1)
@@ -23,7 +23,7 @@
 //       ^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | class Bar<T extends Date>
+// | class Bar<T extends Date> implements Foo<T> {    prop: T;}
 // | ```
 // | 
 // | (verbosity level: 1)
@@ -31,7 +31,7 @@
 //       ^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | class Bar<T extends Date>
+// | class Bar<T extends Date> implements Foo<T> {    prop: T;}
 // | ```
 // | 
 // | (verbosity level: 2)
@@ -65,8 +65,8 @@
 //           ^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | class c5b
-// | namespace c5b
+// | namespace c5b {    const y: number;}
+// | 
 // | ```
 // | 
 // | (verbosity level: 2)
@@ -74,8 +74,8 @@
 //           ^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | class c5b
-// | namespace c5b
+// | namespace c5b {    const y: number;}
+// | 
 // | ```
 // | 
 // | (verbosity level: 1)
@@ -115,7 +115,7 @@
 //           ^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | class Opt
+// | class Opt {    render(): any;}
 // | ```
 // | 
 // | (verbosity level: 1)
@@ -123,7 +123,7 @@
 //           ^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | class Opt
+// | class Opt {    render(): any;}
 // | ```
 // | 
 // | (verbosity level: 2)
@@ -186,7 +186,8 @@
             "line": 11,
             "character": 13
           }
-        }
+        },
+        "canIncreaseVerbosity": true
       },
       "verbosityLevel": 0
     }
@@ -205,7 +206,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\nclass Opt\n```\n"
+          "value": "```tsx\nclass Opt {    render(): any;}\n```\n"
         },
         "range": {
           "start": {
@@ -236,7 +237,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\nclass Opt\n```\n"
+          "value": "```tsx\nclass Opt {    render(): any;}\n```\n"
         },
         "range": {
           "start": {
@@ -297,7 +298,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\ninterface Foo<T extends Date>\n```\n"
+          "value": "```tsx\ninterface Foo<T extends Date> {    prop: T;}\n```\n"
         },
         "range": {
           "start": {
@@ -358,7 +359,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\nclass Bar<T extends Date>\n```\n"
+          "value": "```tsx\nclass Bar<T extends Date> implements Foo<T> {    prop: T;}\n```\n"
         },
         "range": {
           "start": {
@@ -389,7 +390,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\nclass Bar<T extends Date>\n```\n"
+          "value": "```tsx\nclass Bar<T extends Date> implements Foo<T> {    prop: T;}\n```\n"
         },
         "range": {
           "start": {
@@ -431,7 +432,8 @@
             "line": 1,
             "character": 13
           }
-        }
+        },
+        "canIncreaseVerbosity": true
       },
       "verbosityLevel": 0
     }
@@ -450,7 +452,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\nclass c5b\nnamespace c5b\n```\n"
+          "value": "```tsx\nnamespace c5b {    const y: number;}\n\n```\n"
         },
         "range": {
           "start": {
@@ -481,7 +483,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\nclass c5b\nnamespace c5b\n```\n"
+          "value": "```tsx\nnamespace c5b {    const y: number;}\n\n```\n"
         },
         "range": {
           "start": {

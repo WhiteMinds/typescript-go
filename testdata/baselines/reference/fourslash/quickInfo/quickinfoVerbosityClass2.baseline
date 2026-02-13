@@ -7,7 +7,7 @@
 //       ^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | class Foo<T>
+// | class Foo<T> {    static whatever(): void;    constructor(public x: T);    public x: T;    public y: T;    private foo(): Apple;    protected z: boolean;}
 // | ```
 // | 
 // | (verbosity level: 1)
@@ -15,7 +15,7 @@
 //       ^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | class Foo<T>
+// | class Foo<T> {    static whatever(): void;    constructor(public x: T);    public x: T;    public y: T;    private foo(): {        color: string;    };    protected z: boolean;}
 // | ```
 // | 
 // | (verbosity level: 2)
@@ -92,7 +92,7 @@
 //             ^^^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | class (Anonymous class)<T>
+// | (local class) (Anonymous class)<T>
 // | ```
 // | 
 // | (verbosity level: 0)
@@ -100,7 +100,7 @@
 //             ^^^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | class (Anonymous class)<T>
+// | (local class) class<T> {    static whatever(): void;    constructor(public x: T);    public x: T;    public y: T;    private foo(): {        color: string;    };    protected z: boolean;}
 // | ```
 // | 
 // | (verbosity level: 2)
@@ -108,7 +108,7 @@
 //             ^^^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | class (Anonymous class)<T>
+// | (local class) class<T> {    static whatever(): void;    constructor(public x: T);    public x: T;    public y: T;    private foo(): Apple;    protected z: boolean;}
 // | ```
 // | 
 // | (verbosity level: 1)
@@ -136,7 +136,7 @@
 //                ^^^^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | class Animal
+// | abstract class Animal
 // | ```
 // | 
 // | (verbosity level: 0)
@@ -144,7 +144,7 @@
 //                ^^^^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | class Animal
+// | abstract class Animal {    name: string;    abstract makeSound(): void;}
 // | ```
 // | 
 // | (verbosity level: 1)
@@ -164,7 +164,7 @@
 //       ^^^
 // | ----------------------------------------------------------------------
 // | ```tsx
-// | class Dog
+// | class Dog {    what(this: this, that: Dog): void;    "__#private@#bones": string[];}
 // | ```
 // | 
 // | (verbosity level: 1)
@@ -215,7 +215,8 @@
             "line": 3,
             "character": 9
           }
-        }
+        },
+        "canIncreaseVerbosity": true
       },
       "verbosityLevel": 0
     }
@@ -234,7 +235,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\nclass Foo<T>\n```\n"
+          "value": "```tsx\nclass Foo<T> {    static whatever(): void;    constructor(public x: T);    public x: T;    public y: T;    private foo(): Apple;    protected z: boolean;}\n```\n"
         },
         "range": {
           "start": {
@@ -246,6 +247,7 @@
             "character": 9
           }
         },
+        "canIncreaseVerbosity": true,
         "canDecreaseVerbosity": true
       },
       "verbosityLevel": 1
@@ -265,7 +267,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\nclass Foo<T>\n```\n"
+          "value": "```tsx\nclass Foo<T> {    static whatever(): void;    constructor(public x: T);    public x: T;    public y: T;    private foo(): {        color: string;    };    protected z: boolean;}\n```\n"
         },
         "range": {
           "start": {
@@ -481,7 +483,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\nclass (Anonymous class)<T>\n```\n"
+          "value": "```tsx\n(local class) (Anonymous class)<T>\n```\n"
         },
         "range": {
           "start": {
@@ -492,7 +494,8 @@
             "line": 16,
             "character": 17
           }
-        }
+        },
+        "canIncreaseVerbosity": true
       },
       "verbosityLevel": 0
     }
@@ -511,7 +514,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\nclass (Anonymous class)<T>\n```\n"
+          "value": "```tsx\n(local class) class<T> {    static whatever(): void;    constructor(public x: T);    public x: T;    public y: T;    private foo(): Apple;    protected z: boolean;}\n```\n"
         },
         "range": {
           "start": {
@@ -523,6 +526,7 @@
             "character": 17
           }
         },
+        "canIncreaseVerbosity": true,
         "canDecreaseVerbosity": true
       },
       "verbosityLevel": 1
@@ -542,7 +546,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\nclass (Anonymous class)<T>\n```\n"
+          "value": "```tsx\n(local class) class<T> {    static whatever(): void;    constructor(public x: T);    public x: T;    public y: T;    private foo(): {        color: string;    };    protected z: boolean;}\n```\n"
         },
         "range": {
           "start": {
@@ -603,7 +607,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\nclass Animal\n```\n"
+          "value": "```tsx\nabstract class Animal\n```\n"
         },
         "range": {
           "start": {
@@ -614,7 +618,8 @@
             "line": 28,
             "character": 21
           }
-        }
+        },
+        "canIncreaseVerbosity": true
       },
       "verbosityLevel": 0
     }
@@ -633,7 +638,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\nclass Animal\n```\n"
+          "value": "```tsx\nabstract class Animal {    name: string;    abstract makeSound(): void;}\n```\n"
         },
         "range": {
           "start": {
@@ -675,7 +680,8 @@
             "line": 32,
             "character": 9
           }
-        }
+        },
+        "canIncreaseVerbosity": true
       },
       "verbosityLevel": 0
     }
@@ -694,7 +700,7 @@
       "hover": {
         "contents": {
           "kind": "markdown",
-          "value": "```tsx\nclass Dog\n```\n"
+          "value": "```tsx\nclass Dog {    what(this: this, that: Dog): void;    \"__#private@#bones\": string[];}\n```\n"
         },
         "range": {
           "start": {
