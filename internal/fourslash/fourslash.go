@@ -3673,6 +3673,38 @@ func (f *FourslashTest) VerifyRenameFailed(t *testing.T, preferences *lsutil.Use
 	}
 }
 
+func (f *FourslashTest) VerifyPrepareRenameSucceeded(t *testing.T, preferences *lsutil.UserPreferences) {
+	t.Helper()
+	params := &lsproto.PrepareRenameParams{
+		TextDocument: lsproto.TextDocumentIdentifier{
+			Uri: lsconv.FileNameToDocumentURI(f.activeFilename),
+		},
+		Position: f.currentCaretPosition,
+	}
+
+	prefix := f.getCurrentPositionPrefix()
+	result := sendRequest(t, f, lsproto.TextDocumentPrepareRenameInfo, params)
+	if result.PrepareRenamePlaceholder == nil && result.Range == nil && result.PrepareRenameDefaultBehavior == nil {
+		t.Fatal(prefix + "Expected prepareRename to succeed, but got null response")
+	}
+}
+
+func (f *FourslashTest) VerifyPrepareRenameFailed(t *testing.T, preferences *lsutil.UserPreferences) {
+	t.Helper()
+	params := &lsproto.PrepareRenameParams{
+		TextDocument: lsproto.TextDocumentIdentifier{
+			Uri: lsconv.FileNameToDocumentURI(f.activeFilename),
+		},
+		Position: f.currentCaretPosition,
+	}
+
+	prefix := f.getCurrentPositionPrefix()
+	result := sendRequest(t, f, lsproto.TextDocumentPrepareRenameInfo, params)
+	if result.PrepareRenamePlaceholder != nil || result.Range != nil || result.PrepareRenameDefaultBehavior != nil {
+		t.Fatalf(prefix+"Expected prepareRename to fail, but got a result: %+v", result)
+	}
+}
+
 func (f *FourslashTest) VerifyBaselineRenameAtRangesWithText(
 	t *testing.T,
 	preferences *lsutil.UserPreferences,
