@@ -3675,6 +3675,7 @@ func (f *FourslashTest) VerifyRenameFailed(t *testing.T, preferences *lsutil.Use
 
 func (f *FourslashTest) VerifyPrepareRenameSucceeded(t *testing.T, preferences *lsutil.UserPreferences) {
 	t.Helper()
+	// !!! set preferences
 	params := &lsproto.PrepareRenameParams{
 		TextDocument: lsproto.TextDocumentIdentifier{
 			Uri: lsconv.FileNameToDocumentURI(f.activeFilename),
@@ -3691,6 +3692,7 @@ func (f *FourslashTest) VerifyPrepareRenameSucceeded(t *testing.T, preferences *
 
 func (f *FourslashTest) VerifyPrepareRenameFailed(t *testing.T, preferences *lsutil.UserPreferences) {
 	t.Helper()
+	// !!! set preferences
 	params := &lsproto.PrepareRenameParams{
 		TextDocument: lsproto.TextDocumentIdentifier{
 			Uri: lsconv.FileNameToDocumentURI(f.activeFilename),
