@@ -709,6 +709,31 @@ func (l *LanguageService) symbolAndEntriesToImplementations(ctx context.Context,
 	return lsproto.LocationOrLocationsOrDefinitionLinksOrNull{Locations: &locations}, nil
 }
 
+func (l *LanguageService) PrepareRename(ctx context.Context, params *lsproto.PrepareRenameParams) (lsproto.PrepareRenameResponse, error) {
+	program, sourceFile := l.getProgramAndFile(params.TextDocumentURI())
+	position := int(l.converters.LineAndCharacterToPosition(sourceFile, params.Position))
+	node := astnav.GetTouchingPropertyName(sourceFile, position)
+
+	if !isNodeEligibleForRename(node) {
+		return lsproto.PrepareRenameResponse{}, nil
+	}
+
+	checker, done := program.GetTypeChecker(ctx)
+	defer done()
+
+	if !l.isValidRenameTarget(node, sourceFile, program, checker) {
+		return lsproto.PrepareRenameResponse{}, nil
+	}
+
+	r := l.converters.ToLSPRange(sourceFile, core.NewTextRange(node.Pos(), node.End()))
+	return lsproto.PrepareRenameResponse{
+		PrepareRenamePlaceholder: &lsproto.PrepareRenamePlaceholder{
+			Range:       r,
+			Placeholder: node.Text(),
+		},
+	}, nil
+}
+
 func (l *LanguageService) ProvideRename(ctx context.Context, params *lsproto.RenameParams, orchestrator CrossProjectOrchestrator) (lsproto.WorkspaceEditOrNull, error) {
 	return handleCrossProject(
 		l,
@@ -734,6 +759,11 @@ func (l *LanguageService) symbolAndEntriesToRename(ctx context.Context, params *
 	checker, done := program.GetTypeChecker(ctx)
 	defer done()
 
+	sourceFile := program.GetSourceFile(params.TextDocumentURI().FileName())
+	if sourceFile != nil && !l.isValidRenameTarget(data.OriginalNode, sourceFile, program, checker) {
+		return lsproto.WorkspaceEditOrNull{}, nil
+	}
+
 	for _, entry := range entries {
 		uri := l.getFileNameOfEntry(entry)
 		if l.UserPreferences().AllowRenameOfImportPath != core.TSTrue && entry.node != nil && ast.IsStringLiteralLike(entry.node) && ast.TryGetImportFromModuleSpecifier(entry.node) != nil {
@@ -750,6 +780,124 @@ func (l *LanguageService) symbolAndEntriesToRename(ctx context.Context, params *
 			Changes: &changes,
 		},
 	}, nil
+}
+
+// isValidRenameTarget checks whether the node at the rename location represents a symbol that
+// can be renamed. It mirrors the validation in TypeScript's getRenameInfoForNode (rename.ts).
+func (l *LanguageService) isValidRenameTarget(node *ast.Node, sourceFile *ast.SourceFile, program *compiler.Program, c *checker.Checker) bool {
+	symbol := c.GetSymbolAtLocation(node)
+	if symbol == nil {
+		// Labels don't have symbols but are valid rename targets.
+		if ast.IsLabelName(node) {
+			return true
+		}
+		return false
+	}
+
+	declarations := symbol.Declarations
+	if len(declarations) == 0 {
+		return false
+	}
+
+	// Disallow rename for elements that are defined in the standard TypeScript library.
+	for _, decl := range declarations {
+		declFile := ast.GetSourceFileOfNode(decl)
+		if declFile != nil && program.IsSourceFileDefaultLibrary(declFile.Path()) && tspath.IsDeclarationFileName(declFile.FileName()) {
+			return false
+		}
+	}
+
+	// Cannot rename `default` as in `import { default as foo } from "./someModule"`.
+	if ast.IsIdentifier(node) && node.Text() == "default" && symbol.Parent != nil && symbol.Parent.Flags&ast.SymbolFlagsModule != 0 {
+		return false
+	}
+
+	// Disallow rename of import paths unless preference allows it.
+	if ast.IsStringLiteralLike(node) && ast.TryGetImportFromModuleSpecifier(node) != nil {
+		return l.UserPreferences().AllowRenameOfImportPath == core.TSTrue
+	}
+
+	// Disallow rename for elements that would rename across node_modules packages.
+	if l.wouldRenameInOtherNodeModules(sourceFile, symbol, c) {
+		return false
+	}
+
+	return true
+}
+
+// wouldRenameInOtherNodeModules checks if a rename operation would affect symbols across
+// different node_modules packages, which should be disallowed.
+func (l *LanguageService) wouldRenameInOtherNodeModules(sourceFile *ast.SourceFile, symbol *ast.Symbol, c *checker.Checker) bool {
+	// When not using aliases for rename, resolve the alias to check the actual symbol's declarations.
+	if l.UserPreferences().UseAliasesForRename.IsFalse() && symbol.Flags&ast.SymbolFlagsAlias != 0 {
+		for _, decl := range symbol.Declarations {
+			if ast.IsImportSpecifier(decl) && decl.AsImportSpecifier().PropertyName == nil {
+				if resolved, ok := c.ResolveAlias(symbol); ok {
+					symbol = resolved
+				}
+				break
+			}
+		}
+	}
+
+	declarations := symbol.Declarations
+	if len(declarations) == 0 {
+		return false
+	}
+
+	originalInNodeModules := isInsideNodeModules(sourceFile.FileName())
+	if !originalInNodeModules {
+		// Original file is not in node_modules — block if any declaration is.
+		for _, decl := range declarations {
+			declFile := ast.GetSourceFileOfNode(decl)
+			if declFile != nil && isInsideNodeModules(declFile.FileName()) {
+				return true
+			}
+		}
+		return false
+	}
+
+	// Original file is in node_modules — block if declarations are in a different package.
+	originalPkg := getPackagePathComponents(sourceFile.FileName())
+	if originalPkg == nil {
+		return false
+	}
+	for _, decl := range declarations {
+		declFile := ast.GetSourceFileOfNode(decl)
+		if declFile == nil {
+			continue
+		}
+		declPkg := getPackagePathComponents(declFile.FileName())
+		if declPkg != nil {
+			minLen := min(len(originalPkg), len(declPkg))
+			for i := 0; i <= minLen; i++ {
+				if i >= len(originalPkg) || i >= len(declPkg) || originalPkg[i] != declPkg[i] {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+// getPackagePathComponents returns the path components up to and including the package name
+// within node_modules, or nil if the path is not inside node_modules.
+func getPackagePathComponents(filePath string) []string {
+	components := strings.Split(filePath, "/")
+	nodeModulesIdx := -1
+	for i := len(components) - 1; i >= 0; i-- {
+		if components[i] == "node_modules" {
+			nodeModulesIdx = i
+			break
+		}
+	}
+	if nodeModulesIdx == -1 {
+		return nil
+	}
+	if nodeModulesIdx+2 <= len(components) {
+		return components[:nodeModulesIdx+2]
+	}
+	return components
 }
 
 func (l *LanguageService) getTextForRename(originalNode *ast.Node, entry *ReferenceEntry, newText string, checker *checker.Checker) string {
