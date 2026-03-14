@@ -759,11 +759,6 @@ func (l *LanguageService) symbolAndEntriesToRename(ctx context.Context, params *
 	checker, done := program.GetTypeChecker(ctx)
 	defer done()
 
-	sourceFile := program.GetSourceFile(params.TextDocumentURI().FileName())
-	if sourceFile != nil && !l.isValidRenameTarget(data.OriginalNode, sourceFile, program, checker) {
-		return lsproto.WorkspaceEditOrNull{}, nil
-	}
-
 	for _, entry := range entries {
 		uri := l.getFileNameOfEntry(entry)
 		if l.UserPreferences().AllowRenameOfImportPath != core.TSTrue && entry.node != nil && ast.IsStringLiteralLike(entry.node) && ast.TryGetImportFromModuleSpecifier(entry.node) != nil {
