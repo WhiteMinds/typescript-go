@@ -865,8 +865,8 @@ func (l *LanguageService) wouldRenameInOtherNodeModules(sourceFile *ast.SourceFi
 		declPkg := getPackagePathComponents(declFile.FileName())
 		if declPkg != nil {
 			minLen := min(len(originalPkg), len(declPkg))
-			for i := 0; i <= minLen; i++ {
-				if i >= len(originalPkg) || i >= len(declPkg) || originalPkg[i] != declPkg[i] {
+			for i := 0; i < minLen; i++ {
+				if originalPkg[i] != declPkg[i] {
 					return true
 				}
 			}
@@ -877,6 +877,7 @@ func (l *LanguageService) wouldRenameInOtherNodeModules(sourceFile *ast.SourceFi
 
 // getPackagePathComponents returns the path components up to and including the package name
 // within node_modules, or nil if the path is not inside node_modules.
+// For scoped packages (e.g., @scope/package), includes both the scope and package name.
 func getPackagePathComponents(filePath string) []string {
 	components := strings.Split(filePath, "/")
 	nodeModulesIdx := -1
@@ -889,10 +890,16 @@ func getPackagePathComponents(filePath string) []string {
 	if nodeModulesIdx == -1 {
 		return nil
 	}
-	if nodeModulesIdx+2 <= len(components) {
-		return components[:nodeModulesIdx+2]
+	// Include up to the package name after node_modules.
+	// For scoped packages (@scope/pkg), include one extra component.
+	endIdx := nodeModulesIdx + 2
+	if endIdx <= len(components) && strings.HasPrefix(components[nodeModulesIdx+1], "@") {
+		endIdx = nodeModulesIdx + 3
 	}
-	return components
+	if endIdx > len(components) {
+		endIdx = len(components)
+	}
+	return components[:endIdx]
 }
 
 func (l *LanguageService) getTextForRename(originalNode *ast.Node, entry *ReferenceEntry, newText string, checker *checker.Checker) string {
